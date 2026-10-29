@@ -26,7 +26,8 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("ANTHROPIC_API_KEY", "AGENT_SMITH_ANTHROPIC_API_KEY"),
     )
     model: str = "claude-sonnet-5-5"
-    temperature: float = Field(default=0.0, ge=0.0, le=1.0)
+    # None = provider default; some models (e.g. claude-sonnet-5-5) reject any other value.
+    temperature: float | None = Field(default=None, ge=0.0, le=1.0)
     max_tokens: int = Field(default=4096, gt=0)
     llm_timeout: float = Field(default=60.0, gt=0)
     llm_max_retries: int = Field(default=2, ge=0)
@@ -45,9 +46,10 @@ class Settings(BaseSettings):
     respect_robots: bool = True
 
     # Agent
+    max_iterations: int = Field(default=3, gt=0)
     max_queries: int = Field(default=3, gt=0)
     max_search_results: int = Field(default=5, gt=0)
-    max_pages_per_query: int = Field(default=3, gt=0)
+    max_pages_per_iteration: int = Field(default=3, gt=0)
 
 
 @lru_cache

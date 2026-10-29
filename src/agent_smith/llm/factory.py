@@ -17,10 +17,11 @@ def create_llm(settings: Settings | None = None, **overrides: object) -> BaseCha
 
     params: dict[str, object] = {
         "model": settings.model,
-        "temperature": settings.temperature,
         "max_tokens": settings.max_tokens,
-        **overrides,
     }
+    if settings.temperature is not None:
+        params["temperature"] = settings.temperature
+    params.update(overrides)
     return ChatAnthropic(
         api_key=settings.anthropic_api_key,
         timeout=settings.llm_timeout,
