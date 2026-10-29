@@ -1,8 +1,7 @@
 import asyncio
-from collections.abc import Awaitable, Callable
 from typing import Any
 
-from agent_smith.agent.state import AgentState
+from agent_smith.agent.state import AgentNode, AgentState
 from agent_smith.core.config import Settings, get_settings
 from agent_smith.core.errors import SearchError
 from agent_smith.core.logging import get_logger
@@ -10,7 +9,7 @@ from agent_smith.search.base import SearchProvider, SearchResult
 
 log = get_logger(__name__)
 
-SearchNode = Callable[[AgentState], Awaitable[dict[str, Any]]]
+SearchNode = AgentNode
 
 
 def make_search_node(provider: SearchProvider, settings: Settings | None = None) -> SearchNode:

@@ -15,7 +15,7 @@ class StubLLM:
         self.queries = queries
         self.seen: list[Any] = []
 
-    def with_structured_output(self, schema: type[QueryPlan]) -> RunnableLambda[Any, QueryPlan]:
+    def with_structured_output(self, schema: type[QueryPlan], **_: Any) -> RunnableLambda[Any, QueryPlan]:
         def respond(prompt: Any) -> QueryPlan:
             self.seen.append(prompt)
             return schema(queries=self.queries)

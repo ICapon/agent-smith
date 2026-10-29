@@ -17,7 +17,7 @@ def test_builds_from_settings(monkeypatch: pytest.MonkeyPatch) -> None:
     llm = create_llm(Settings(_env_file=None, model="claude-haiku-5-5", llm_max_retries=1))
     assert isinstance(llm, ChatAnthropic)
     assert llm.model == "claude-haiku-5-5"
-    assert llm.temperature == 0.0
+    assert llm.temperature is None
     assert llm.max_retries == 1
 
 

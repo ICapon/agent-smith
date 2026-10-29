@@ -1,4 +1,3 @@
-from collections.abc import Awaitable, Callable
 from datetime import date
 from typing import Any
 
@@ -6,13 +5,13 @@ from langchain_core.language_models import BaseChatModel
 from pydantic import BaseModel, Field
 
 from agent_smith.agent.prompts import PLAN_PROMPT
-from agent_smith.agent.state import AgentState
+from agent_smith.agent.state import AgentNode, AgentState
 from agent_smith.core.config import Settings, get_settings
 from agent_smith.core.logging import get_logger
 
 log = get_logger(__name__)
 
-PlanNode = Callable[[AgentState], Awaitable[dict[str, Any]]]
+PlanNode = AgentNode
 
 
 class QueryPlan(BaseModel):
@@ -26,7 +25,7 @@ class QueryPlan(BaseModel):
 def make_plan_node(llm: BaseChatModel, settings: Settings | None = None) -> PlanNode:
     """Build the `plan` node, binding the LLM and settings it depends on."""
     settings = settings or get_settings()
-    chain = PLAN_PROMPT | llm.with_structured_output(QueryPlan)
+    chain = PLAN_PROMPT | llm.with_structured_output(QueryPlan, method="json_schema")
 
     async def plan(state: AgentState) -> dict[str, Any]:
         result = await chain.ainvoke(
