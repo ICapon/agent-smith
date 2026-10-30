@@ -6,6 +6,7 @@ from langgraph.graph import START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
 from agent_smith.agent.nodes.plan import make_plan_node
+from agent_smith.agent.nodes.route import make_route_node
 from agent_smith.agent.nodes.scrape import PageScraper, make_scrape_node
 from agent_smith.agent.nodes.search import make_search_node
 from agent_smith.agent.nodes.synthesize import make_synthesize_node
@@ -45,6 +46,11 @@ def make_route_after_synthesize(
     return route_after_synthesize
 
 
+def route_after_route(state: AgentState) -> Literal["plan", "__end__"]:
+    """Only research messages go on to the search pipeline; chat and clarify end here."""
+    return "plan" if state.get("route", "research") == "research" else "__end__"
+
+
 def build_graph(
     llm: BaseChatModel,
     scraper: PageScraper,
@@ -55,12 +61,14 @@ def build_graph(
 
     builder = StateGraph(AgentState, input_schema=GraphInput, output_schema=GraphOutput)
 
+    builder.add_node("route", make_route_node(llm))
     builder.add_node("plan", make_plan_node(llm, settings))
     builder.add_node("search", make_search_node(provider, settings))
     builder.add_node("scrape", make_scrape_node(scraper, settings))
     builder.add_node("synthesize", make_synthesize_node(llm))
 
-    builder.add_edge(START, "plan")
+    builder.add_edge(START, "route")
+    builder.add_conditional_edges("route", route_after_route)
     builder.add_edge("plan", "search")
     builder.add_edge("search", "scrape")
     builder.add_edge("scrape", "synthesize")

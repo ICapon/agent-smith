@@ -45,6 +45,19 @@ class Settings(BaseSettings):
     max_content_chars: int = Field(default=20_000, gt=0)
     respect_robots: bool = True
 
+    # Sandbox
+    sandbox_image: str = "python:3.12-slim"
+    sandbox_network: str = "none"
+    sandbox_memory: str = "512m"
+    sandbox_cpus: float = Field(default=1.0, gt=0)
+    sandbox_pids_limit: int = Field(default=100, gt=0)
+    sandbox_timeout: float = Field(default=30.0, gt=0)
+    sandbox_max_output_bytes: int = Field(default=100_000, gt=0)
+    sandbox_max_file_bytes: int = Field(default=1_000_000, gt=0)
+
+    # Coding agent
+    coding_max_steps: int = Field(default=15, gt=0)
+
     # Agent
     max_iterations: int = Field(default=3, gt=0)
     max_queries: int = Field(default=3, gt=0)

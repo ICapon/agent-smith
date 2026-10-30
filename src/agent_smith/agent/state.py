@@ -10,6 +10,7 @@ from agent_smith.search.base import SearchResult
 
 class AgentState(TypedDict):
     question: str
+    route: str | None
     queries: list[str]
     search_results: Annotated[list[SearchResult], add]
     pages: Annotated[list[PageContent], add]
